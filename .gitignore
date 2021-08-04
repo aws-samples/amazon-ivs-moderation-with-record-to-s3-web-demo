@@ -1,0 +1,12 @@
+node_modules
+build
+.nuxt
+
+# misc/OS files
+ehthumbs.db
+Thumbs.db
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
