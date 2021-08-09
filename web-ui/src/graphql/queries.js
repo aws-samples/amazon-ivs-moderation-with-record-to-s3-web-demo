@@ -3,19 +3,28 @@
 export const listChannels = /* GraphQL */ `
 query ListChannelss(
   $filter: ModelChannelsFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listChannelss(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
+    $limit: Int
+    $nextToken: String
+  ) {
+    listChannelss(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
       id
+      num_flagged_images
       playback_url
-      flagged_images
       time
+      flagged_images {
+        time
+        url
+        moderation_results {
+          label
+          value
+        }
+      }
     }
-    nextToken
+      nextToken
+    }
+    
   }
-}
 `;
 export const listSettings = /* GraphQL */ `
   query ListSettingss(
