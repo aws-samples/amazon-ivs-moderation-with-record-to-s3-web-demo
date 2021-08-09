@@ -109,15 +109,9 @@ class IvsModerationStack(core.Stack):
             actions=["sns:Publish"]
         ))
 
-        # API gateway integrated with lambda
-        self.create_api_gw(lambda_api)
-
         # Api lambda to give access to review and ledger tables
         table.grant_full_access(lambda_api)
         review_db_table.grant_full_access(lambda_api)
-
-        # Debug database should be deleted
-        self.create_db_table("moderation-", "id")
 
         # Create userpool
         pool = self.create_user_pool('ivsmoderation-pool')
@@ -126,6 +120,9 @@ class IvsModerationStack(core.Stack):
         # Create identity pool and map it to the userpool created
         identity_pool = self.create_identity_pool(
             'ivsmoderation-idpool', pool, pool_client)
+
+        # API gateway integrated with lambda
+        self.create_api_gw(lambda_api, pool)
 
         # Create iam role for authenticated users for the identity pool
         identity_auth_role = iam.Role(self, 'auth-role', assumed_by=iam.FederatedPrincipal(federated="cognito-identity.amazonaws.com", conditions=({
@@ -161,17 +158,27 @@ class IvsModerationStack(core.Stack):
             'SettingsTable', settings_db_table)
 
         # Adding resolvers mapping to the datasource
-        self.add_resolvers(review_db_table_source, 'getChannels', 'Query', 'ivs_moderation/schemas/resolvers/Query.getChannels.req.vtl')
-        self.add_resolvers(review_db_table_source, 'listChannelss', 'Query', 'ivs_moderation/schemas/resolvers/Query.listChannelss.req.vtl')
-        self.add_resolvers(settings_db_table_source, 'getSettings', 'Query', 'ivs_moderation/schemas/resolvers/Query.getSettings.req.vtl')
-        self.add_resolvers(settings_db_table_source, 'listSettingss', 'Query', 'ivs_moderation/schemas/resolvers/Query.listSettings.req.vtl')
+        self.add_resolvers(review_db_table_source, 'getChannels', 'Query',
+                           'ivs_moderation/schemas/resolvers/Query.getChannels.req.vtl')
+        self.add_resolvers(review_db_table_source, 'listChannelss', 'Query',
+                           'ivs_moderation/schemas/resolvers/Query.listChannelss.req.vtl')
+        self.add_resolvers(settings_db_table_source, 'getSettings', 'Query',
+                           'ivs_moderation/schemas/resolvers/Query.getSettings.req.vtl')
+        self.add_resolvers(settings_db_table_source, 'listSettingss', 'Query',
+                           'ivs_moderation/schemas/resolvers/Query.listSettings.req.vtl')
 
-        self.add_resolvers(review_db_table_source, 'createChannels', 'Mutation', 'ivs_moderation/schemas/resolvers/Mutation.createChannels.req.vtl')
-        self.add_resolvers(review_db_table_source, 'updateChannels', 'Mutation', 'ivs_moderation/schemas/resolvers/Mutation.updateChannels.req.vtl')
-        self.add_resolvers(review_db_table_source, 'deleteChannels', 'Mutation', 'ivs_moderation/schemas/resolvers/Mutation.deleteChannels.req.vtl')
-        self.add_resolvers(settings_db_table_source, 'createSettings', 'Mutation', 'ivs_moderation/schemas/resolvers/Mutation.createSettings.req.vtl')
-        self.add_resolvers(settings_db_table_source, 'updateSettings', 'Mutation', 'ivs_moderation/schemas/resolvers/Mutation.updateSettings.req.vtl')
-        self.add_resolvers(settings_db_table_source, 'deleteSettings', 'Mutation', 'ivs_moderation/schemas/resolvers/Mutation.deleteSettings.req.vtl')
+        self.add_resolvers(review_db_table_source, 'createChannels', 'Mutation',
+                           'ivs_moderation/schemas/resolvers/Mutation.createChannels.req.vtl')
+        self.add_resolvers(review_db_table_source, 'updateChannels', 'Mutation',
+                           'ivs_moderation/schemas/resolvers/Mutation.updateChannels.req.vtl')
+        self.add_resolvers(review_db_table_source, 'deleteChannels', 'Mutation',
+                           'ivs_moderation/schemas/resolvers/Mutation.deleteChannels.req.vtl')
+        self.add_resolvers(settings_db_table_source, 'createSettings', 'Mutation',
+                           'ivs_moderation/schemas/resolvers/Mutation.createSettings.req.vtl')
+        self.add_resolvers(settings_db_table_source, 'updateSettings', 'Mutation',
+                           'ivs_moderation/schemas/resolvers/Mutation.updateSettings.req.vtl')
+        self.add_resolvers(settings_db_table_source, 'deleteSettings', 'Mutation',
+                           'ivs_moderation/schemas/resolvers/Mutation.deleteSettings.req.vtl')
 
         # Exports
         core.CfnOutput(self, 's3_bucket', value=bucket.bucket_name,
@@ -183,15 +190,15 @@ class IvsModerationStack(core.Stack):
         core.CfnOutput(self, 'identity_pool_id', value=identity_pool.ref,
                        description="Identity pool name", export_name='identity-pool-id')
         core.CfnOutput(self, 'aws_appsync_graphqlEndpoint', value=api.graphql_url,
-                       description="Appsync api url", export_name='appsync-api-url')
+                       description='Appsync api url', export_name='appsync-api-url')
+        core.CfnOutput(self, 'settings_db_table', value=settings_db_table.table_name,
+                       description='Rest API endpoint', export_name='settings-db-table')
 
     def create_s3_bucket(self, bucketname):
         ''' Function to create s3 bucket '''
 
         # Disabling block public access option as part of the requirement of IVS beta API
-        # Remove removal policy once the code goes for production
-        return s3.Bucket(self, bucketname,
-                         block_public_access=s3.BlockPublicAccess(block_public_acls=False), removal_policy=core.RemovalPolicy.DESTROY)
+        return s3.Bucket(self, bucketname, block_public_access=s3.BlockPublicAccess(block_public_acls=False))
 
     def create_lambda_function(self, lfuncname, codeloc, env):
         ''' Function to create lambda '''
@@ -234,12 +241,31 @@ class IvsModerationStack(core.Stack):
         s3_client = session.client('s3')
         return s3_client.list_buckets()['Owner']['ID']
 
-    def create_api_gw(self, backend):
+    def create_api_gw(self, backend, user_pool):
         """ Function to create api gateway """
-        return api.LambdaRestApi(self, "api", handler=backend, default_cors_preflight_options={
+        api_ep = api.LambdaRestApi(
+            self, "ivs-moderation-api", handler=backend, proxy=False)
+
+        # Attaching cognito auth for all API requests
+        auth = api.CognitoUserPoolsAuthorizer(
+            self, "apiauth", cognito_user_pools=[user_pool])
+
+        # Creating root resource
+        api_root_resource = api_ep.root.add_resource("api")
+        api_root_resource.add_method(
+            "GET", authorizer=auth, authorization_type=api.AuthorizationType.COGNITO)
+
+        # Creating the channel resource
+        api_resource = api_root_resource.add_resource("channel", default_cors_preflight_options={
             "allow_origins": api.Cors.ALL_ORIGINS,
             "allow_methods": api.Cors.ALL_METHODS
         })
+
+        # Creating REST API Method "POST"
+        api_resource.add_method("POST", authorizer=auth,
+                                authorization_type=api.AuthorizationType.COGNITO)
+
+        return api_ep
 
     def create_lambda_layer(self):
         """ Function to create lambda layer """
@@ -286,6 +312,7 @@ class IvsModerationStack(core.Stack):
         db_source.create_resolver(
             field_name=field_name,
             type_name=type_name,
-            request_mapping_template=appsync.MappingTemplate.from_file(request_mapping_template),
+            request_mapping_template=appsync.MappingTemplate.from_file(
+                request_mapping_template),
             response_mapping_template=appsync.MappingTemplate.dynamo_db_result_item()
         )

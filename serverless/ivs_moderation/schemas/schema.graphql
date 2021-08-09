@@ -1,424 +1,449 @@
-﻿schema {
-  query: Query
-  mutation: Mutation
-  subscription: Subscription
-}
-
-type Channels {
-  flagged_images: [String]!
-  id: ID!
-  playback_url: String!
-  time: String
-}
-
-type ModelChannelsConnection {
-  items: [Channels]
-  nextToken: String
-}
-
-type ModelSettingsConnection {
-  items: [Settings]
-  nextToken: String
-}
-
-type Mutation {
-  createChannels(condition: ModelChannelsConditionInput, input: CreateChannelsInput!): Channels
-  createSettings(condition: ModelSettingsConditionInput, input: CreateSettingsInput!): Settings
-  deleteChannels(condition: ModelChannelsConditionInput, input: DeleteChannelsInput!): Channels
-  deleteSettings(condition: ModelSettingsConditionInput, input: DeleteSettingsInput!): Settings
-  updateChannels(condition: ModelChannelsConditionInput, input: UpdateChannelsInput!): Channels
-  updateSettings(condition: ModelSettingsConditionInput, input: UpdateSettingsInput!): Settings
-}
-
-type Query {
-  getChannels(id: ID!): Channels
-  getSettings(id: ID!): Settings
-  listChannelss(filter: ModelChannelsFilterInput, limit: Int, nextToken: String): ModelChannelsConnection
-  listSettingss(filter: ModelSettingsFilterInput, limit: Int, nextToken: String): ModelSettingsConnection
-}
-
-type Settings {
-  _version: Int
-  adult_toys: String
-  air_crash: String
-  alcohol: String
-  alcoholic_beverages: String
-  corpses: String
-  drinking: String
-  drug_paraphernalia: String
-  drug_products: String
-  drug_use: String
-  drugs: String
-  emaciated_bodies: String
-  explicit_nudity: String
-  explosions_and_blasts: String
-  extremist: String
-  female_swimwear_or_underwear: String
-  gambling: String
-  graphic_female_nudity: String
-  graphic_male_nudity: String
-  graphic_violence_gore: String
-  hanging: String
-  hate_symbols: String
-  id: ID!
-  illustrated_explicit_nudity: String
-  male_swimwear_or_underwear: String
-  middle_finger: String
-  nazi_party: String
-  nudity: String
-  partial_nudity: String
-  physical_violence: String
-  pills: String
-  revealing_clothes: String
-  rude_gestures: String
-  self_injury: String
-  sexual_activity: String
-  sexual_situations: String
-  smoking: String
-  suggestive: String
-  tobacco: String
-  tobacco_products: String
-  violence: String
-  visually_disturbing: String
-  weapon_violence: String
-  weapons: String
-  white_supremacy: String
-}
-
-type Subscription {
-  onCreateChannels: Channels @aws_subscribe(mutations : ["createChannels"])
-  onCreateSettings: Settings @aws_subscribe(mutations : ["createSettings"])
-  onDeleteChannels: Channels @aws_subscribe(mutations : ["deleteChannels"])
-  onDeleteSettings: Settings @aws_subscribe(mutations : ["deleteSettings"])
-  onUpdateChannels: Channels @aws_subscribe(mutations : ["updateChannels"])
-  onUpdateSettings: Settings @aws_subscribe(mutations : ["updateSettings"])
-}
-
-enum ModelAttributeTypes {
-  _null
-  binary
-  binarySet
-  bool
-  list
-  map
-  number
-  numberSet
-  string
-  stringSet
-}
-
-enum ModelSortDirection {
-  ASC
-  DESC
+﻿type Channels {
+	id: ID!
+	playback_url: String!
+	flagged_images: [ModerationResults]
+	time: String
+	num_flagged_images: Int
 }
 
 input CreateChannelsInput {
-  flagged_images: [String]!
-  id: ID
-  playback_url: String!
-  time: String
+	id: ID
+	playback_url: String!
+	flagged_images: [ModerationResultsInput]
+	time: String
+	num_flagged_images: Int
 }
 
 input CreateSettingsInput {
-  _version: Int
-  adult_toys: String
-  air_crash: String
-  alcohol: String
-  alcoholic_beverages: String
-  corpses: String
-  drinking: String
-  drug_paraphernalia: String
-  drug_products: String
-  drug_use: String
-  drugs: String
-  emaciated_bodies: String
-  explicit_nudity: String
-  explosions_and_blasts: String
-  extremist: String
-  female_swimwear_or_underwear: String
-  gambling: String
-  graphic_female_nudity: String
-  graphic_male_nudity: String
-  graphic_violence_gore: String
-  hanging: String
-  hate_symbols: String
-  id: ID
-  illustrated_explicit_nudity: String
-  male_swimwear_or_underwear: String
-  middle_finger: String
-  nazi_party: String
-  nudity: String
-  partial_nudity: String
-  physical_violence: String
-  pills: String
-  revealing_clothes: String
-  rude_gestures: String
-  self_injury: String
-  sexual_activity: String
-  sexual_situations: String
-  smoking: String
-  suggestive: String
-  tobacco: String
-  tobacco_products: String
-  violence: String
-  visually_disturbing: String
-  weapon_violence: String
-  weapons: String
-  white_supremacy: String
+	id: ID
+	explicit_nudity: String
+	nudity: String
+	graphic_male_nudity: String
+	graphic_female_nudity: String
+	sexual_activity: String
+	illustrated_explicit_nudity: String
+	adult_toys: String
+	suggestive: String
+	sexual_situations: String
+	partial_nudity: String
+	revealing_clothes: String
+	female_swimwear_or_underwear: String
+	male_swimwear_or_underwear: String
+	violence: String
+	graphic_violence_gore: String
+	physical_violence: String
+	weapon_violence: String
+	weapons: String
+	self_injury: String
+	visually_disturbing: String
+	emaciated_bodies: String
+	corpses: String
+	hanging: String
+	air_crash: String
+	explosions_and_blasts: String
+	rude_gestures: String
+	middle_finger: String
+	drugs: String
+	drug_products: String
+	drug_use: String
+	pills: String
+	drug_paraphernalia: String
+	tobacco: String
+	tobacco_products: String
+	smoking: String
+	alcohol: String
+	drinking: String
+	alcoholic_beverages: String
+	gambling: String
+	hate_symbols: String
+	nazi_party: String
+	white_supremacy: String
+	extremist: String
+	_version: Int
 }
 
 input DeleteChannelsInput {
-  id: ID
+	id: ID
 }
 
 input DeleteSettingsInput {
-  id: ID
+	id: ID
+}
+
+enum ModelAttributeTypes {
+	binary
+	binarySet
+	bool
+	list
+	map
+	number
+	numberSet
+	string
+	stringSet
+	_null
 }
 
 input ModelBooleanInput {
-  attributeExists: Boolean
-  attributeType: ModelAttributeTypes
-  eq: Boolean
-  ne: Boolean
+	ne: Boolean
+	eq: Boolean
+	attributeExists: Boolean
+	attributeType: ModelAttributeTypes
 }
 
 input ModelChannelsConditionInput {
-  and: [ModelChannelsConditionInput]
-  flagged_images: ModelStringInput
-  not: ModelChannelsConditionInput
-  or: [ModelChannelsConditionInput]
-  playback_url: ModelStringInput
-  time: ModelStringInput
+	playback_url: ModelStringInput
+	time: ModelStringInput
+	flagged_image_count: ModelIntInput
+	and: [ModelChannelsConditionInput]
+	or: [ModelChannelsConditionInput]
+	not: ModelChannelsConditionInput
+}
+
+type ModelChannelsConnection {
+	items: [Channels]
+	nextToken: String
 }
 
 input ModelChannelsFilterInput {
-  and: [ModelChannelsFilterInput]
-  flagged_images: ModelStringInput
-  id: ModelIDInput
-  not: ModelChannelsFilterInput
-  or: [ModelChannelsFilterInput]
-  playback_url: ModelStringInput
-  time: ModelStringInput
+	id: ModelIDInput
+	playback_url: ModelStringInput
+	time: ModelStringInput
+	flagged_image_count: ModelIntInput
+	and: [ModelChannelsFilterInput]
+	or: [ModelChannelsFilterInput]
+	not: ModelChannelsFilterInput
 }
 
 input ModelFloatInput {
-  attributeExists: Boolean
-  attributeType: ModelAttributeTypes
-  between: [Float]
-  eq: Float
-  ge: Float
-  gt: Float
-  le: Float
-  lt: Float
-  ne: Float
+	ne: Float
+	eq: Float
+	le: Float
+	lt: Float
+	ge: Float
+	gt: Float
+	between: [Float]
+	attributeExists: Boolean
+	attributeType: ModelAttributeTypes
 }
 
 input ModelIDInput {
-  attributeExists: Boolean
-  attributeType: ModelAttributeTypes
-  beginsWith: ID
-  between: [ID]
-  contains: ID
-  eq: ID
-  ge: ID
-  gt: ID
-  le: ID
-  lt: ID
-  ne: ID
-  notContains: ID
-  size: ModelSizeInput
+	ne: ID
+	eq: ID
+	le: ID
+	lt: ID
+	ge: ID
+	gt: ID
+	contains: ID
+	notContains: ID
+	between: [ID]
+	beginsWith: ID
+	attributeExists: Boolean
+	attributeType: ModelAttributeTypes
+	size: ModelSizeInput
 }
 
 input ModelIntInput {
-  attributeExists: Boolean
-  attributeType: ModelAttributeTypes
-  between: [Int]
-  eq: Int
-  ge: Int
-  gt: Int
-  le: Int
-  lt: Int
-  ne: Int
+	ne: Int
+	eq: Int
+	le: Int
+	lt: Int
+	ge: Int
+	gt: Int
+	between: [Int]
+	attributeExists: Boolean
+	attributeType: ModelAttributeTypes
 }
 
 input ModelSettingsConditionInput {
-  _version: ModelIntInput
-  adult_toys: ModelStringInput
-  air_crash: ModelStringInput
-  alcohol: ModelStringInput
-  alcoholic_beverages: ModelStringInput
-  and: [ModelSettingsConditionInput]
-  corpses: ModelStringInput
-  drinking: ModelStringInput
-  drug_paraphernalia: ModelStringInput
-  drug_products: ModelStringInput
-  drug_use: ModelStringInput
-  drugs: ModelStringInput
-  emaciated_bodies: ModelStringInput
-  explicit_nudity: ModelStringInput
-  explosions_and_blasts: ModelStringInput
-  extremist: ModelStringInput
-  female_swimwear_or_underwear: ModelStringInput
-  gambling: ModelStringInput
-  graphic_female_nudity: ModelStringInput
-  graphic_male_nudity: ModelStringInput
-  graphic_violence_gore: ModelStringInput
-  hanging: ModelStringInput
-  hate_symbols: ModelStringInput
-  illustrated_explicit_nudity: ModelStringInput
-  male_swimwear_or_underwear: ModelStringInput
-  middle_finger: ModelStringInput
-  nazi_party: ModelStringInput
-  not: ModelSettingsConditionInput
-  nudity: ModelStringInput
-  or: [ModelSettingsConditionInput]
-  partial_nudity: ModelStringInput
-  physical_violence: ModelStringInput
-  pills: ModelStringInput
-  revealing_clothes: ModelStringInput
-  rude_gestures: ModelStringInput
-  self_injury: ModelStringInput
-  sexual_activity: ModelStringInput
-  sexual_situations: ModelStringInput
-  smoking: ModelStringInput
-  suggestive: ModelStringInput
-  tobacco: ModelStringInput
-  tobacco_products: ModelStringInput
-  violence: ModelStringInput
-  visually_disturbing: ModelStringInput
-  weapon_violence: ModelStringInput
-  weapons: ModelStringInput
-  white_supremacy: ModelStringInput
+	explicit_nudity: ModelStringInput
+	nudity: ModelStringInput
+	graphic_male_nudity: ModelStringInput
+	graphic_female_nudity: ModelStringInput
+	sexual_activity: ModelStringInput
+	illustrated_explicit_nudity: ModelStringInput
+	adult_toys: ModelStringInput
+	suggestive: ModelStringInput
+	sexual_situations: ModelStringInput
+	partial_nudity: ModelStringInput
+	revealing_clothes: ModelStringInput
+	female_swimwear_or_underwear: ModelStringInput
+	male_swimwear_or_underwear: ModelStringInput
+	violence: ModelStringInput
+	graphic_violence_gore: ModelStringInput
+	physical_violence: ModelStringInput
+	weapon_violence: ModelStringInput
+	weapons: ModelStringInput
+	self_injury: ModelStringInput
+	visually_disturbing: ModelStringInput
+	emaciated_bodies: ModelStringInput
+	corpses: ModelStringInput
+	hanging: ModelStringInput
+	air_crash: ModelStringInput
+	explosions_and_blasts: ModelStringInput
+	rude_gestures: ModelStringInput
+	middle_finger: ModelStringInput
+	drugs: ModelStringInput
+	drug_products: ModelStringInput
+	drug_use: ModelStringInput
+	pills: ModelStringInput
+	drug_paraphernalia: ModelStringInput
+	tobacco: ModelStringInput
+	tobacco_products: ModelStringInput
+	smoking: ModelStringInput
+	alcohol: ModelStringInput
+	drinking: ModelStringInput
+	alcoholic_beverages: ModelStringInput
+	gambling: ModelStringInput
+	hate_symbols: ModelStringInput
+	nazi_party: ModelStringInput
+	white_supremacy: ModelStringInput
+	extremist: ModelStringInput
+	_version: ModelIntInput
+	and: [ModelSettingsConditionInput]
+	or: [ModelSettingsConditionInput]
+	not: ModelSettingsConditionInput
+}
+
+type ModelSettingsConnection {
+	items: [Settings]
+	nextToken: String
 }
 
 input ModelSettingsFilterInput {
-  _version: ModelIntInput
-  adult_toys: ModelStringInput
-  air_crash: ModelStringInput
-  alcohol: ModelStringInput
-  alcoholic_beverages: ModelStringInput
-  and: [ModelSettingsFilterInput]
-  corpses: ModelStringInput
-  drinking: ModelStringInput
-  drug_paraphernalia: ModelStringInput
-  drug_products: ModelStringInput
-  drug_use: ModelStringInput
-  drugs: ModelStringInput
-  emaciated_bodies: ModelStringInput
-  explicit_nudity: ModelStringInput
-  explosions_and_blasts: ModelStringInput
-  extremist: ModelStringInput
-  female_swimwear_or_underwear: ModelStringInput
-  gambling: ModelStringInput
-  graphic_female_nudity: ModelStringInput
-  graphic_male_nudity: ModelStringInput
-  graphic_violence_gore: ModelStringInput
-  hanging: ModelStringInput
-  hate_symbols: ModelStringInput
-  id: ModelIDInput
-  illustrated_explicit_nudity: ModelStringInput
-  male_swimwear_or_underwear: ModelStringInput
-  middle_finger: ModelStringInput
-  nazi_party: ModelStringInput
-  not: ModelSettingsFilterInput
-  nudity: ModelStringInput
-  or: [ModelSettingsFilterInput]
-  partial_nudity: ModelStringInput
-  physical_violence: ModelStringInput
-  pills: ModelStringInput
-  revealing_clothes: ModelStringInput
-  rude_gestures: ModelStringInput
-  self_injury: ModelStringInput
-  sexual_activity: ModelStringInput
-  sexual_situations: ModelStringInput
-  smoking: ModelStringInput
-  suggestive: ModelStringInput
-  tobacco: ModelStringInput
-  tobacco_products: ModelStringInput
-  violence: ModelStringInput
-  visually_disturbing: ModelStringInput
-  weapon_violence: ModelStringInput
-  weapons: ModelStringInput
-  white_supremacy: ModelStringInput
+	id: ModelIDInput
+	explicit_nudity: ModelStringInput
+	nudity: ModelStringInput
+	graphic_male_nudity: ModelStringInput
+	graphic_female_nudity: ModelStringInput
+	sexual_activity: ModelStringInput
+	illustrated_explicit_nudity: ModelStringInput
+	adult_toys: ModelStringInput
+	suggestive: ModelStringInput
+	sexual_situations: ModelStringInput
+	partial_nudity: ModelStringInput
+	revealing_clothes: ModelStringInput
+	female_swimwear_or_underwear: ModelStringInput
+	male_swimwear_or_underwear: ModelStringInput
+	violence: ModelStringInput
+	graphic_violence_gore: ModelStringInput
+	physical_violence: ModelStringInput
+	weapon_violence: ModelStringInput
+	weapons: ModelStringInput
+	self_injury: ModelStringInput
+	visually_disturbing: ModelStringInput
+	emaciated_bodies: ModelStringInput
+	corpses: ModelStringInput
+	hanging: ModelStringInput
+	air_crash: ModelStringInput
+	explosions_and_blasts: ModelStringInput
+	rude_gestures: ModelStringInput
+	middle_finger: ModelStringInput
+	drugs: ModelStringInput
+	drug_products: ModelStringInput
+	drug_use: ModelStringInput
+	pills: ModelStringInput
+	drug_paraphernalia: ModelStringInput
+	tobacco: ModelStringInput
+	tobacco_products: ModelStringInput
+	smoking: ModelStringInput
+	alcohol: ModelStringInput
+	drinking: ModelStringInput
+	alcoholic_beverages: ModelStringInput
+	gambling: ModelStringInput
+	hate_symbols: ModelStringInput
+	nazi_party: ModelStringInput
+	white_supremacy: ModelStringInput
+	extremist: ModelStringInput
+	_version: ModelIntInput
+	and: [ModelSettingsFilterInput]
+	or: [ModelSettingsFilterInput]
+	not: ModelSettingsFilterInput
 }
 
 input ModelSizeInput {
-  between: [Int]
-  eq: Int
-  ge: Int
-  gt: Int
-  le: Int
-  lt: Int
-  ne: Int
+	ne: Int
+	eq: Int
+	le: Int
+	lt: Int
+	ge: Int
+	gt: Int
+	between: [Int]
+}
+
+enum ModelSortDirection {
+	ASC
+	DESC
 }
 
 input ModelStringInput {
-  attributeExists: Boolean
-  attributeType: ModelAttributeTypes
-  beginsWith: String
-  between: [String]
-  contains: String
-  eq: String
-  ge: String
-  gt: String
-  le: String
-  lt: String
-  ne: String
-  notContains: String
-  size: ModelSizeInput
+	ne: String
+	eq: String
+	le: String
+	lt: String
+	ge: String
+	gt: String
+	contains: String
+	notContains: String
+	between: [String]
+	beginsWith: String
+	attributeExists: Boolean
+	attributeType: ModelAttributeTypes
+	size: ModelSizeInput
+}
+
+type ModerationResults {
+	moderation_results: [Results]
+	url: String!
+	time: String
+}
+
+input ModerationResultsInput {
+	moderation_results: [ResultsInput]
+	url: String!
+	time: String
+}
+
+type Mutation {
+	createChannels(input: CreateChannelsInput!, condition: ModelChannelsConditionInput): Channels
+	updateChannels(input: UpdateChannelsInput!, condition: ModelChannelsConditionInput): Channels
+	deleteChannels(input: DeleteChannelsInput!, condition: ModelChannelsConditionInput): Channels
+	createSettings(input: CreateSettingsInput!, condition: ModelSettingsConditionInput): Settings
+	updateSettings(input: UpdateSettingsInput!, condition: ModelSettingsConditionInput): Settings
+	deleteSettings(input: DeleteSettingsInput!, condition: ModelSettingsConditionInput): Settings
+}
+
+type Query {
+	getChannels(id: ID!): Channels
+	listChannelss(filter: ModelChannelsFilterInput, limit: Int, nextToken: String): ModelChannelsConnection
+	getSettings(id: ID!): Settings
+	listSettingss(filter: ModelSettingsFilterInput, limit: Int, nextToken: String): ModelSettingsConnection
+}
+
+type Results {
+	label: String
+	value: Float
+}
+
+input ResultsInput {
+	label: String
+	value: Float
+}
+
+type Settings {
+	id: ID!
+	explicit_nudity: String
+	nudity: String
+	graphic_male_nudity: String
+	graphic_female_nudity: String
+	sexual_activity: String
+	illustrated_explicit_nudity: String
+	adult_toys: String
+	suggestive: String
+	sexual_situations: String
+	partial_nudity: String
+	revealing_clothes: String
+	female_swimwear_or_underwear: String
+	male_swimwear_or_underwear: String
+	violence: String
+	graphic_violence_gore: String
+	physical_violence: String
+	weapon_violence: String
+	weapons: String
+	self_injury: String
+	visually_disturbing: String
+	emaciated_bodies: String
+	corpses: String
+	hanging: String
+	air_crash: String
+	explosions_and_blasts: String
+	rude_gestures: String
+	middle_finger: String
+	drugs: String
+	drug_products: String
+	drug_use: String
+	pills: String
+	drug_paraphernalia: String
+	tobacco: String
+	tobacco_products: String
+	smoking: String
+	alcohol: String
+	drinking: String
+	alcoholic_beverages: String
+	gambling: String
+	hate_symbols: String
+	nazi_party: String
+	white_supremacy: String
+	extremist: String
+	_version: Int
+}
+
+type Subscription {
+	onCreateChannels: Channels
+		@aws_subscribe(mutations: ["createChannels"])
+	onUpdateChannels: Channels
+		@aws_subscribe(mutations: ["updateChannels"])
+	onDeleteChannels: Channels
+		@aws_subscribe(mutations: ["deleteChannels"])
+	onCreateSettings: Settings
+		@aws_subscribe(mutations: ["createSettings"])
+	onUpdateSettings: Settings
+		@aws_subscribe(mutations: ["updateSettings"])
+	onDeleteSettings: Settings
+		@aws_subscribe(mutations: ["deleteSettings"])
 }
 
 input UpdateChannelsInput {
-  flagged_images: [String]
-  id: ID!
-  playback_url: String
-  time: String
+	id: ID!
+	playback_url: String
+	flagged_images: [ModerationResultsInput]
+	time: String
+	num_flagged_images: Int
 }
 
 input UpdateSettingsInput {
-  _version: Int
-  adult_toys: String
-  air_crash: String
-  alcohol: String
-  alcoholic_beverages: String
-  corpses: String
-  drinking: String
-  drug_paraphernalia: String
-  drug_products: String
-  drug_use: String
-  drugs: String
-  emaciated_bodies: String
-  explicit_nudity: String
-  explosions_and_blasts: String
-  extremist: String
-  female_swimwear_or_underwear: String
-  gambling: String
-  graphic_female_nudity: String
-  graphic_male_nudity: String
-  graphic_violence_gore: String
-  hanging: String
-  hate_symbols: String
-  id: ID!
-  illustrated_explicit_nudity: String
-  male_swimwear_or_underwear: String
-  middle_finger: String
-  nazi_party: String
-  nudity: String
-  partial_nudity: String
-  physical_violence: String
-  pills: String
-  revealing_clothes: String
-  rude_gestures: String
-  self_injury: String
-  sexual_activity: String
-  sexual_situations: String
-  smoking: String
-  suggestive: String
-  tobacco: String
-  tobacco_products: String
-  violence: String
-  visually_disturbing: String
-  weapon_violence: String
-  weapons: String
-  white_supremacy: String
+	id: ID!
+	explicit_nudity: String
+	nudity: String
+	graphic_male_nudity: String
+	graphic_female_nudity: String
+	sexual_activity: String
+	illustrated_explicit_nudity: String
+	adult_toys: String
+	suggestive: String
+	sexual_situations: String
+	partial_nudity: String
+	revealing_clothes: String
+	female_swimwear_or_underwear: String
+	male_swimwear_or_underwear: String
+	violence: String
+	graphic_violence_gore: String
+	physical_violence: String
+	weapon_violence: String
+	weapons: String
+	self_injury: String
+	visually_disturbing: String
+	emaciated_bodies: String
+	corpses: String
+	hanging: String
+	air_crash: String
+	explosions_and_blasts: String
+	rude_gestures: String
+	middle_finger: String
+	drugs: String
+	drug_products: String
+	drug_use: String
+	pills: String
+	drug_paraphernalia: String
+	tobacco: String
+	tobacco_products: String
+	smoking: String
+	alcohol: String
+	drinking: String
+	alcoholic_beverages: String
+	gambling: String
+	hate_symbols: String
+	nazi_party: String
+	white_supremacy: String
+	extremist: String
+	_version: Int
 }
