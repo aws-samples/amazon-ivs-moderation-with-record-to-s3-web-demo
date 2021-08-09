@@ -1,6 +1,7 @@
+
 # Amazon IVS Moderation demo – Backend
 
-This reference template shows how you can build add a simple  moderation capability to your Amazon IVS streams. This CDK project will setup up all the required backend resources.
+IVS moderation reference template helps the customer to build moderation capability to their existing IVS deployments. This CDK project helps to setup all the backend resources required.
 
 ⚠️ **IMPORTANT NOTE:** *Deploying this demo application in your AWS account will create and consume AWS resources, which will cost money.*
 
@@ -43,16 +44,26 @@ cdk deploy --parameters email=user@sample.com --outputs-file outputs.json
 ```
 
 * `outputs.json` file can be useful to run helper script to deploy the front-end.
-* `email` parameter is used for sending sns alerts when a new task is assigned to the moderation queue. 
+* `email` parameter is used for sending sns alerts when a new task is assigned to the moderation queue. user@sample.com should be replaced with your email address.
 
-During the installation you should receive an email to subscribe to an SNS topic. You should accept the email.    
+During the installation you should receive an email to subscribe to an SNS topic. Follow th elink to complete the subscirption process.    
 
-Once the installation is completed, note down the S3 bucket created. You should use this S3 bucket when you setup the recording configuration in Amazon IVS.
+Once the installation is completed, note down the Amazon S3 bucket created. You should use this bucket to setup the recording configuration in Amazon IVS.
 
-## Useful commands
+### Post Installation Script
+
+Post installation script is used for deploying default values in the database. Before running the script, make sure that the `outputs.json` file is generated after the `cdk deploy` command. You can run the post installation script as follows.
+
+```
+python post_installation_script.py
+```
+
+### Useful CDK commands
 
  * `cdk ls`          list all stacks in the app
  * `cdk synth`       emits the synthesized CloudFormation template
  * `cdk deploy`      deploy this stack to your default AWS account/region
  * `cdk diff`        compare deployed stack with current state
  * `cdk docs`        open CDK documentation
+
+
