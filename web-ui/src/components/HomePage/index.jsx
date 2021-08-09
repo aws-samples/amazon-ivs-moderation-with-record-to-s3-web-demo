@@ -115,7 +115,7 @@ const HomePage = () => {
                       })
                       setMenuOpen(false)
                     }}
-                    thumbnailImage={channel.flagged_images[0]}
+                    thumbnailImage={channel.flagged_images[0].url}
                     channelId={channel.id}
                   />
                 )

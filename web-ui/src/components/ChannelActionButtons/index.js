@@ -58,9 +58,9 @@ const ChannelActionButtons = ({
   
     // 2.For Real API: uncomment below until end of bracket
     restApi
-      .post("/channel", payload)
+      .post("api/channel", payload)
       .then((response) => {
-        console("respnose", response);
+        console.log("respnose", response);
         setSnackbarMessage(`Channel ${type === actionNames.IGNORE ? "ignored" : "terminated"} successfully`)
         dispatch({
           type: SET_CHANNELS,
