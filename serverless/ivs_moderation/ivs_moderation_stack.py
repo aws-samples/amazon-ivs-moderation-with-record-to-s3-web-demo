@@ -197,8 +197,8 @@ class IvsModerationStack(core.Stack):
     def create_s3_bucket(self, bucketname):
         ''' Function to create s3 bucket '''
 
-        # Disabling block public access option as part of the requirement of IVS beta API
-        return s3.Bucket(self, bucketname, block_public_access=s3.BlockPublicAccess(block_public_acls=False))
+        # Enabled SSE-S3 and disabled public access
+        return s3.Bucket(self, bucketname, block_public_access=s3.BlockPublicAccess.BLOCK_ALL, encryption=s3.BucketEncryption.S3_MANAGED)
 
     def create_lambda_function(self, lfuncname, codeloc, env):
         ''' Function to create lambda '''
