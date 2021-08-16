@@ -28,9 +28,9 @@ def stream_moderation_service(bucket, key, event):
     logger.debug("Response from Rekognition: %s", rekognition_response)
 
     # verifying the rekognition response against the policies
-    veryify_policies_response = rekognition.check_moderate_policies(
+    verify_policies_response = rekognition.check_moderate_policies(
         rekognition_response)
-    logger.info("Moderation status: %s", veryify_policies_response)
+    logger.info("Moderation status: %s", verify_policies_response)
 
     channel_region = event['Records'][0]['awsRegion']
 
@@ -51,7 +51,7 @@ def stream_moderation_service(bucket, key, event):
     playback_url = rekognition.get_playback_url(channel_arn)
     logger.debug("Channel arn: %s", channel_arn)
 
-    if 'result' in veryify_policies_response and veryify_policies_response['result'] == 'suspend':
+    if 'result' in verify_policies_response and verify_policies_response['result'] == 'suspend':
         suspension_status = rekognition.suspend_channel(channel_arn)
         logger.info("Channel %s is %s", channel_arn, suspension_status['status'])
         # Preparing review status message for db and email
@@ -64,14 +64,14 @@ def stream_moderation_service(bucket, key, event):
             'status': 'suspended',
             'time': suspension_status['time'],
         }
-        review_result['moderation_results'] = veryify_policies_response['moderation_results']
+        review_result['moderation_results'] = verify_policies_response['moderation_results']
         logger.info("Review result: %s", json.dumps(review_result))
         # Update the db
         dbtable = os.environ['STATUSTABLE']
         message = "Channel is suspended"
         updatedb(review_result, dbtable, message, notify=True)
 
-    elif 'result' in veryify_policies_response and veryify_policies_response['result'] == "moderate":
+    elif 'result' in verify_policies_response and verify_policies_response['result'] == "moderate":
         # Check if the db entry is already there in the moderated table if so just update the flagged image status
         # Else just update a new item in the db
         # updatedb
@@ -90,8 +90,7 @@ def stream_moderation_service(bucket, key, event):
                 }
             ]
         }
-        # items_to_be_reviewed['flagged_images'][0]['moderation_results'].append(veryify_policies_response['moderation_results'][0])
-        items_to_be_reviewed['flagged_images'][0]['moderation_results'] = items_to_be_reviewed['flagged_images'][0]['moderation_results'] + veryify_policies_response['moderation_results']
+        items_to_be_reviewed['flagged_images'][0]['moderation_results'] = items_to_be_reviewed['flagged_images'][0]['moderation_results'] + verify_policies_response['moderation_results']
         logger.debug("Items to be reviewed: %s",
                      json.dumps(items_to_be_reviewed))
         dbtable = os.environ['REVIEWTABLE']
