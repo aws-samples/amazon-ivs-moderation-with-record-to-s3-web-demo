@@ -34,11 +34,6 @@ def stream_moderation_service(bucket, key, event):
 
     channel_region = event['Records'][0]['awsRegion']
 
-    # Setup for removal
-    # Beta Path
-    # channel_id = event['Records'][0]['s3']['object']['key'].split('/')[2]
-    # account_id = event['Records'][0]['s3']['object']['key'].split('/')[1]
-
     # GA Path
     channel_id = event['Records'][0]['s3']['object']['key'].split('/')[3]
     account_id = event['Records'][0]['s3']['object']['key'].split('/')[2]
