@@ -6,6 +6,7 @@ import boto3
 import json
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
+from decimal import Decimal
 
 class RekognitionService:
     """ Main class for the rekognition service """
@@ -44,9 +45,9 @@ class RekognitionService:
                 'status': 'suspended',
                 'time': datetime.utcnow().isoformat()
             }
-        
+            
         except ClientError as error:
-            self.log.error("Server error: %s", error)
+            self.log.error("Internal error: %s", error)
             status = "Channel suspension failed"
 
         return status
@@ -58,18 +59,26 @@ class RekognitionService:
         # or needs to be passed to the moderation queue
         # suspend = 'suspend' / suspend = 'moderate'
 
-        status = None
+        status = {}
+        status['moderation_results'] = []
+        mod_results = {}
 
         for label in labels:
             modified_label = label['Name'].replace(" ", "_").lower()
             self.log.debug("Label %s translated to %s", label, modified_label)
 
-            if modified_label in self.autosuspended_labels and self.autosuspended_labels[modified_label] is not '0':
+            if modified_label in self.autosuspended_labels and self.autosuspended_labels[modified_label] != '0':
                 if (label['Confidence'] >= float(self.autosuspended_labels[modified_label])):
-                    if status:
-                        self.log.info('Status is already set with %s', status)
+                    if 'result' in status and status['result'] == 'suspend':
+                        self.log.info('Status is already set with %s', status['result'])
+                        mod_results['label'] = modified_label
+                        mod_results['value'] = str(label['Confidence'])
+                        status['moderation_results'].append(mod_results)
                     else:
-                        status = 'suspend'
+                        status['result'] = 'suspend'
+                        mod_results['label'] = modified_label
+                        mod_results['value'] = str(label['Confidence'])
+                        status['moderation_results'].append(mod_results)
                         self.log.info('Label: %s, is in autosuspended list, %s', label['Name'], label['Confidence'])
                 else:
                     self.log.info("The label %s is below autosuspend threshold, %s", label['Name'], label['Confidence'])
@@ -78,27 +87,38 @@ class RekognitionService:
                 self.log.info("Auto suspension is disabled for label %s", modified_label)
             
             else:
-                self.log.info("Label %s is not defined.", modified_label)
+                self.log.info("Label %s is not defined in auto suspension list.", modified_label)
 
-            if modified_label in self.moderated_labels and status is None:
+            if modified_label in self.moderated_labels:
                 
-                if self.autosuspended_labels[modified_label] is '0':
+                if self.autosuspended_labels[modified_label] == '0':
                     autosuspension_disabled = 1
                 else: 
                     autosuspension_disabled = 0
 
-                if (label['Confidence'] >= float(self.moderated_labels[modified_label])) and (label['Confidence'] < float(self.autosuspended_labels[modified_label])) and (self.moderated_labels[modified_label] != '0') and (autosuspension_disabled is 0):
-                    if status:
-                        self.log.debug('Status is already set with %s', status)
+                if (label['Confidence'] >= float(self.moderated_labels[modified_label])) and (label['Confidence'] < float(self.autosuspended_labels[modified_label])) and (self.moderated_labels[modified_label] != '0') and (autosuspension_disabled == 0):
+                    if 'result' in status and status['result'] == 'suspend':
+                        self.log.debug('Status is already set with %s', status['result']) # Need to remove this if check as the status check is already done at the upper loop
                     else:
-                        status = 'moderate'
+                        status['result'] = 'moderate'
                         self.log.info("Label: %s is in moderated list, %s", label['Name'], label['Confidence'])
-                elif (label['Confidence'] >= float(self.moderated_labels[modified_label])) and (self.moderated_labels[modified_label] != '0') and (autosuspension_disabled is 1):
-                    if status:
-                        self.log.debug("Status is already set with %s", status)
+                        mod_results['label'] = modified_label
+                        mod_results['value'] = str(label['Confidence'])
+                        # status['moderation_results'].append(mod_results)
+                        status['moderation_results'] = status['moderation_results'] + [mod_results.copy()]
+                elif (label['Confidence'] >= float(self.moderated_labels[modified_label])) and (self.moderated_labels[modified_label] != '0') and (autosuspension_disabled == 1):
+                    if 'result' in status and status['result'] == 'suspend':
+                        self.log.debug("Status is already set with %s", status['result'])
+                        # mod_results['label'] = modified_label
+                        # mod_results['value'] = str(label['Confidence'])
+                        # status['moderation_results'].append(mod_results)
                     else:
-                        status = 'moderate'
+                        status['result'] = 'moderate'
                         self.log.info("Label: %s is in moderated list, %s", label['Name'], label['Confidence'])
+                        mod_results['label'] = modified_label
+                        mod_results['value'] = str(label['Confidence'])
+                        # status['moderation_results'].append(mod_results)
+                        status['moderation_results'] = status['moderation_results'] + [mod_results.copy()]
                 else:
                     self.log.info("The label %s is below moderated label threshold, %s", label['Name'], label['Confidence'])
             

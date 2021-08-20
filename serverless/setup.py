@@ -7,9 +7,9 @@ with open("README.md") as fp:
 
 setuptools.setup(
     name="ivs_moderation",
-    version="0.0.1",
+    version="0.0.5",
 
-    description="An empty CDK Python app",
+    description="A prototype to moderate IVS streams using Rekognition.",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
@@ -19,7 +19,7 @@ setuptools.setup(
     packages=setuptools.find_packages(where="ivs_moderation"),
 
     install_requires=[
-        "aws-cdk.core==1.64.0",
+        "aws-cdk.core>=1.111.0",
     ],
 
     python_requires=">=3.6",
