@@ -5,12 +5,14 @@ import thumbsupIcon from '../../assets/thumbsup.svg'
 import { ButtonGrid, ChannelActionButtonContainer } from './styled'
 import UserContext from '../../context/UserContext'
 import { actionNames, apiActionNames } from '../../constants/actionNames'
-
+import { Amplify, API } from "aws-amplify";
 import restApi from '../../api/api'
 import ConfirmationModal from '../ConfirmationModal'
 import ActionButton from './ActionButton'
 import ChannelsContext from '../../context/ChannelsContext'
 import { SET_CHANNELS, SET_SELECTED_CHANNEL_INDEX } from '../../context/ChannelsContextProvider'
+
+Amplify.configure(restApi)
 
 const ChannelActionButtons = ({
   setSnackbarMessage,
@@ -40,6 +42,16 @@ const ChannelActionButtons = ({
       action: apiActionName,
       user: userData.username,
     };
+    const apiName = 'channelActions';
+    const path = 'api/channel';
+    const apiInitData = {
+      body: payload,
+      headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': userData.signInUserSession.idToken.jwtToken
+      }
+    }
 
     //1. Testing Ignore and Terminate button without API call
     // setTimeout(() => {
@@ -57,8 +69,8 @@ const ChannelActionButtons = ({
     // }, 2000);
   
     // 2.For Real API: uncomment below until end of bracket
-    restApi
-      .post("api/channel", payload)
+    API
+      .post(apiName, path, apiInitData)
       .then((response) => {
         console.log("respnose", response);
         setSnackbarMessage(`Channel ${type === actionNames.IGNORE ? "ignored" : "terminated"} successfully`)

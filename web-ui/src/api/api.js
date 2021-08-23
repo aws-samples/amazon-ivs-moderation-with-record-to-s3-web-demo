@@ -1,10 +1,13 @@
-import axios from 'axios'
 import { awsConfig } from '../configs/config'
 
-export default axios.create({
-  baseURL: awsConfig.apiGateway,
-  headers: {  
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  }
-});
+const restApi = {
+
+    endpoints: [
+      {
+        name: "channelActions",
+        endpoint: awsConfig.apiGateway
+      }
+    ]
+};
+
+export default restApi
