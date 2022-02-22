@@ -2,18 +2,43 @@
 
 ## Updating Config Variables
 
-The variables in the file `config.js` are all currently empty and the developer will need to deploy the backend to their account. 
+The variables in the file `config.js` are initially empty. The developer will first need to deploy the backend to their account. This process writes the associated values to screen and to the outputs.json file once complete. They can also be retrieved from the AWS CloudFormation Console under the ivs-moderation stack's Outputs tab.
+
+The region value is set to us-west-2 (Oregon) by default. Change this to us-east-1 (N.Virginia) or eu-west-1 (Dublin) to match the region in which you deployed the backend.
+
+Once updated, the config.js file should look similar to this:
+
+```
+import Amplify from 'aws-amplify'
+
+export const awsConfig = {
+  Auth: {
+    identityPoolId: "us-west-2:5bccaac1-71ba-4927-b7f6-5cbecfa791ec",
+    region: "us-west-2", 
+    userPoolId: "us-west-2_gY10q8PuN", 
+    userPoolWebClientId: "5snlrgu90d2rf8eogk86rm4u5g",
+  },
+  aws_appsync_graphqlEndpoint: "https://kdmmol2h6jcxrivd6jpknopvni.appsync-api.us-west-2.amazonaws.com/graphql",
+  apiGateway: "https://juzgm32quj.execute-api.us-west-2.amazonaws.com/prod/",
+  aws_appsync_authenticationType: process.env.REACT_APP_AWS_APPSYNC_AUTHENTICATIONTYPE,
+}
+
+Amplify.configure(awsConfig)
+```
 
 ### For retrieving your `Auth` configs
 
-This project uses an existing backend with an Authentication, and this connection provided by Amplify.
+This project uses an existing backend with an Authentication. You can create new users via the web applications login prompt.
 
-For replacing the Auth config variables, you can either use the [Amplify CLI to add Authentication to the project](https://docs.amplify.aws/lib/auth/getting-started/q/platform/js#create-authentication-service),
-or [go to the console and access Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-console.html) to get the variables needed.
+### Connecting IVS Channels to the moderation workflow
 
-If you do not have an AWS account, please see [How do I create and activate a new Amazon Web Services account?](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/)
-Log into the AWS console if you are not already. Note: If you are logged in as an IAM user, ensure your account has permissions to create and manage the necessary resources and components for this application.
-Follow the instructions for deploying to AWS or running locally.
+The moderation workflow is triggered as thumbnail images are written to the S3 bucket created by the backend deployment. IVS automatically creates these thumbnail images for channels configured to archive to S3. To add auto-recording to S3 to your IVS Channel:
+
+1. Create a recording configuration and specify the S3 bucket deployed by the backend (see _ivs-moderation.s3bucket_ in the output.json)
+2. The frequency at which images are processed for moderation is controlled by the _Target thumbnail interval_ setting in the recording configuration. Set this at the desired cadence.
+3. In the IVS Channel configuration page, enable Auto-record to S3 and select the recording configuration
+
+Refer to the [Create a Channel with Optional Recording](https://docs.aws.amazon.com/ivs/latest/userguide/getting-started-create-channel.html) documentation for additional information
 
 ### More information about other API endpoints
 
