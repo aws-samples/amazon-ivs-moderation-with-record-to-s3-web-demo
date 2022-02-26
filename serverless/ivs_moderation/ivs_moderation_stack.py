@@ -1,4 +1,5 @@
 """ All stack configuration for ivs moderation backend """
+import this
 from aws_cdk import (
     core,
     aws_s3 as s3,
@@ -193,6 +194,7 @@ class IvsModerationStack(core.Stack):
                        description='Appsync api url', export_name='appsync-api-url')
         core.CfnOutput(self, 'settings_db_table', value=settings_db_table.table_name,
                        description='Rest API endpoint', export_name='settings-db-table')
+        core.CfnOutput(self, 'region', value=core.Stack.of(self).region, description='Installation Region', export_name='region')
 
     def create_s3_bucket(self, bucketname):
         ''' Function to create s3 bucket '''
