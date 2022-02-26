@@ -96,15 +96,18 @@ def main():
     db_content = read_file(DB_SCHEMA)
 
     # Finding the settings dbtable from the configuration
-    # for item in config:
     settings_table = config['ivs-moderation']['settingsdbtable']
 
-    # deploying the default parameters
+    # deploying the default settings
+    print('Updating the db with default settings....')
     deploy_db_defaults(settings_table, db_content)
 
     # Creating the web config
+    print('Creating the web-ui config.....')
     reset_config_files()
     create_web_config_file(config)
+
+    print('Completed the updates.....')
 
 # Main function
 if __name__ == '__main__':
