@@ -16,31 +16,39 @@ CONFIGFILE = 'outputs.json'
 DB_SCHEMA = 'ivs_moderation/schemas/db_default.json'
 WEB_CONFIG_FILE = '../web-ui/.env'
 
+
 def create_file(contents):
     ''' Function to create file '''
-    
+
     configs = ''
-    for key, val in contents.items() :
+    for key, val in contents.items():
         configs = configs + key + '=' + val + '\n'
 
     try:
         file = open(WEB_CONFIG_FILE, 'w+')
-        file.write(configs)
+        try:
+            file.write(configs)
+        except Exception as error:
+            print(error)
+        finally:
+            file.close()
     except Exception as error:
         print(error)
-        file.close()
-        
+
 
 def read_file(filename):
     ''' Function to read the files '''
     try:
         file = open(filename, 'r')
-        content = file.read()
-        file.close()
+        try:
+            content = file.read()
+        except Exception as error:
+            print(error)
+        finally:
+            file.close()
 
     except Exception as error:
         print(error)
-        raise
 
     return json.loads(content)
 
@@ -63,6 +71,7 @@ def deploy_db_defaults(dbtable, content):
 
     return response
 
+
 def create_web_config_file(contents):
     ''' Function to create the environment file for the UI '''
 
@@ -82,6 +91,7 @@ def create_web_config_file(contents):
 
     create_file(web_config)
 
+
 def reset_config_files():
     ''' Resetting the config files '''
     if os.path.isfile(WEB_CONFIG_FILE):
@@ -89,6 +99,7 @@ def reset_config_files():
             os.remove(WEB_CONFIG_FILE)
         except Exception as error:
             print(error)
+
 
 def main():
     ''' Main Function '''
@@ -108,6 +119,7 @@ def main():
     create_web_config_file(config)
 
     print('Completed the updates.....')
+
 
 # Main function
 if __name__ == '__main__':
