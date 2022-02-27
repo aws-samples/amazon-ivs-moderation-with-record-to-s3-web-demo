@@ -9,32 +9,32 @@ This project is set up like any standard Python project.  The initialization pro
 To manually create a virtualenv on MacOS and Linux:
 
 ```
-$ python3 -m venv .env
+python3 -m venv .env
 ```
 
 After the init process completes and the virtualenv is created, you can use the following
 step to activate your virtualenv.
 
 ```
-$ source .env/bin/activate
+source .env/bin/activate
 ```
 
 If you are a Windows platform, you would activate the virtualenv like this:
 
 ```
-% .env\Scripts\activate.bat
+.env\Scripts\activate.bat
 ```
 
 Once the virtualenv is activated, you can install the required dependencies.
 
 ```
-$ pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 At this point you can now synthesize the CloudFormation template for this code.
 
 ```
-$ cdk synth
+cdk synth
 ```
 Once the synthesize command is successful, you can deploy the backend using the deploy command.
 
@@ -51,7 +51,7 @@ Once the installation is completed, note down the S3 bucket created. You should 
 
 ### Post Installation Script
 
-Post installation script loads the default moderation values in the settings db table and also creates the web-ui config to automate the front-end backend integration. Before running the script, make sure that the `outputs.json` file is generated after the `cdk deploy` command. You can run the post installation script as follows:
+The Post installation script loads default moderation values into the settings db table and creates the web-ui config to automate connection to the backend infrastructure. Before running the script, make sure that the `outputs.json` file is generated after the `cdk deploy` command. You can run the post installation script as follows:
 
 ```
 python post_installation_script.py
