@@ -36,16 +36,13 @@ At this point you can now synthesize the CloudFormation template for this code.
 ```
 cdk synth
 ```
-Once the synthesize command is successful, you can deploy the backend using the deploy command.
+Once the synthesize command is successful, you can deploy the backend. Ensure you configure the **email** parameter with a valid recipient address. SNS alerts will be sent to this address when a new task is assigned to the moderation queue.
 
 ```
-cdk deploy --parameters email=user@sample.com --outputs-file outputs.json
+cdk deploy --outputs-file outputs.json --parameters email=user@sample.com 
 ```
 
-* `outputs.json` file can be useful to run helper script to deploy the front-end.
-* `email` parameter is used for sending sns alerts when a new task is assigned to the moderation queue. 
-
-During the installation you should receive an email to subscribe to an SNS topic. You should accept the email.    
+During the installation you should receive an email to subscribe to an SNS topic. Click in the link to accept the email.    
 
 Once the installation is completed, note down the S3 bucket created. You should use this S3 bucket when you setup the recording configuration in Amazon IVS.
 
