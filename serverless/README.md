@@ -51,7 +51,7 @@ Once the installation is completed, note down the S3 bucket created. You should 
 
 ### Post Installation Script
 
-Post installation script loads the default moderation values in the settings db table. Before running the script, make sure that the `outputs.json` file is generated after the `cdk deploy` command. You can run the post installation script as follows.
+Post installation script loads the default moderation values in the settings db table and also creates the web-ui config to automate the front-end backend integration. Before running the script, make sure that the `outputs.json` file is generated after the `cdk deploy` command. You can run the post installation script as follows:
 
 ```
 python post_installation_script.py
