@@ -1,25 +1,16 @@
 # Amazon IVS Moderation demo – Frontend
 
-## Updating Config Variables
+### Connecting IVS Channels to the moderation workflow
 
-The variables in the file `config.js` are all currently empty and the developer will need to deploy the backend to their account. 
+The moderation workflow is triggered as thumbnail images are written to the S3 bucket created by the backend deployment. The S3 bucket name is returned by the cdk deploy command, or can be retrieved from the resultant outputs.json file or from the AWS Console by viewing the ivs-moderation stack outputs in AWS CloudFormation. 
 
-### For retrieving your `Auth` configs
+Amazon IVS automatically creates thumbnail images for channels configured to archive to S3. To add auto-recording to S3 to your IVS Channel:
 
-This project uses an existing backend with an Authentication, and this connection provided by Amplify.
+1. Create a recording configuration and specify the S3 bucket deployed by the backend.
+2. The frequency at which images are processed for moderation is controlled by _Target thumbnail interval_.
+3. In the IVS Channel configuration page, enable Auto-record to S3 and select the recording configuration.
 
-For replacing the Auth config variables, you can either use the [Amplify CLI to add Authentication to the project](https://docs.amplify.aws/lib/auth/getting-started/q/platform/js#create-authentication-service),
-or [go to the console and access Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-console.html) to get the variables needed.
-
-If you do not have an AWS account, please see [How do I create and activate a new Amazon Web Services account?](https://aws.amazon.com/premiumsupport/knowledge-center/create-and-activate-aws-account/)
-Log into the AWS console if you are not already. Note: If you are logged in as an IAM user, ensure your account has permissions to create and manage the necessary resources and components for this application.
-Follow the instructions for deploying to AWS or running locally.
-
-### More information about other API endpoints
-
-For GraphQL: [Create a GraphQL API](https://docs.amplify.aws/cli/graphql-transformer/overview#create-a-graphql-api) or in [docs.aws.amazon](https://docs.aws.amazon.com/appsync/latest/devguide/designing-a-graphql-api.html)
-
-For RestAPI: [Create a Rest API](https://docs.amplify.aws/cli/restapi) or in [docs.aws.amazon](https://docs.aws.amazon.com/code-samples/latest/catalog/code-catalog-python-example_code-apigateway-aws_service.html)
+Refer to the [Create a Channel with Optional Recording](https://docs.aws.amazon.com/ivs/latest/userguide/getting-started-create-channel.html) documentation for additional information
 
 <br>
 
@@ -50,3 +41,17 @@ The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+<br>
+
+-----------
+
+### Authenticating Users
+
+This project uses an Amazon Cognito backend for user authentication. You can create new users via the web applications login prompt.
+
+### More information about other API endpoints
+
+For GraphQL: [Create a GraphQL API](https://docs.amplify.aws/cli/graphql-transformer/overview#create-a-graphql-api) or in [docs.aws.amazon](https://docs.aws.amazon.com/appsync/latest/devguide/designing-a-graphql-api.html)
+
+For RestAPI: [Create a Rest API](https://docs.amplify.aws/cli/restapi) or in [docs.aws.amazon](https://docs.aws.amazon.com/code-samples/latest/catalog/code-catalog-python-example_code-apigateway-aws_service.html)
