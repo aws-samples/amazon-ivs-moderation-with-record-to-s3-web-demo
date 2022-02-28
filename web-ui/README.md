@@ -6,9 +6,9 @@ The moderation workflow is triggered as thumbnail images are written to the S3 b
 
 Amazon IVS automatically creates thumbnail images for channels configured to archive to S3. To add auto-recording to S3 to your IVS Channel:
 
-1. Create a recording configuration and specify the S3 bucket deployed by the backend (see _ivs-moderation.s3bucket_ in the output.json)
-2. The frequency at which images are processed for moderation is controlled by the _Target thumbnail interval_ setting in the recording configuration. Set this at the desired cadence.
-3. In the IVS Channel configuration page, enable Auto-record to S3 and select the recording configuration
+1. Create a recording configuration and specify the S3 bucket deployed by the backend.
+2. The frequency at which images are processed for moderation is controlled by _Target thumbnail interval_.
+3. In the IVS Channel configuration page, enable Auto-record to S3 and select the recording configuration.
 
 Refer to the [Create a Channel with Optional Recording](https://docs.aws.amazon.com/ivs/latest/userguide/getting-started-create-channel.html) documentation for additional information
 
@@ -48,7 +48,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ### Authenticating Users
 
-This project uses an Amazon Coignito backend for user authentication. You can create new users via the web applications login prompt.
+This project uses an Amazon Cognito backend for user authentication. You can create new users via the web applications login prompt.
 
 ### More information about other API endpoints
 
