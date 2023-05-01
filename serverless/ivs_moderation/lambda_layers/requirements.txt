@@ -1,2 +1,2 @@
 aws-wsgi==0.2.7
-Flask==1.1.2
+Flask==2.3.2
